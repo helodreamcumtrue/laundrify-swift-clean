@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Star, Send } from 'lucide-react';
 import StudentNavbar from '../../components/StudentNavbar';
-
+import { supabase } from "@/integrations/supabase/client";
 const StudentFeedback = () => {
   const [formData, setFormData] = useState({
     requestId: '',
