@@ -1,18 +1,19 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,13 +22,17 @@ const Login = () => {
     try {
       const loggedInUser = await signIn(formData.email, formData.password);
 
+      if (!loggedInUser || !loggedInUser.role) {
+        throw new Error("Invalid login or missing role information.");
+      }
+
       toast({
         title: "Success",
         description: "Logged in successfully!",
       });
 
       // Redirect based on user role
-      if (loggedInUser?.role === 'Admin') {
+      if (loggedInUser.role === 'Admin') {
         navigate('/admin/dashboard');
       } else {
         navigate('/student/home');
@@ -35,20 +40,13 @@ const Login = () => {
 
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.message || "Failed to log in",
+        title: "Login Failed",
+        description: error.message || "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
   };
 
   return (
@@ -83,44 +81,3 @@ const Login = () => {
               </label>
               <input
                 id="password"
-                name="password"
-                type="password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                placeholder="Enter your password"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {loading ? (
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Signing In...
-                </div>
-              ) : (
-                'Sign In'
-              )}
-            </button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Don't have an account?{' '}
-              <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
-                Sign up
-              </Link>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default Login;
