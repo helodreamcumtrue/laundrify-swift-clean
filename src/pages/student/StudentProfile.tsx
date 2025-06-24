@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { User, Mail, MapPin, Shield, Edit2, Save, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import StudentNavbar from '../../components/StudentNavbar';
-
+import { supabase } from "@/integrations/supabase/client";
 const StudentProfile = () => {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
