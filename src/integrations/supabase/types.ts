@@ -9,13 +9,317 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      feedback: {
+        Row: {
+          admin_notes: string | null
+          created_at: string | null
+          id: string
+          is_resolved: boolean | null
+          issue_description: string
+          rating: number | null
+          request_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          issue_description: string
+          rating?: number | null
+          request_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          issue_description?: string
+          rating?: number | null
+          request_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "laundry_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      laundry_requests: {
+        Row: {
+          clothes_type: string
+          created_at: string | null
+          delivery_time: string | null
+          id: string
+          notes: string | null
+          order_date: string | null
+          otp: string | null
+          pickup_slot_id: string | null
+          pickup_time: string | null
+          qr_code: string | null
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          clothes_type: string
+          created_at?: string | null
+          delivery_time?: string | null
+          id?: string
+          notes?: string | null
+          order_date?: string | null
+          otp?: string | null
+          pickup_slot_id?: string | null
+          pickup_time?: string | null
+          qr_code?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          clothes_type?: string
+          created_at?: string | null
+          delivery_time?: string | null
+          id?: string
+          notes?: string | null
+          order_date?: string | null
+          otp?: string | null
+          pickup_slot_id?: string | null
+          pickup_time?: string | null
+          qr_code?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "laundry_requests_pickup_slot_id_fkey"
+            columns: ["pickup_slot_id"]
+            isOneToOne: false
+            referencedRelation: "pickup_slots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "laundry_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          title: string
+          type: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          title: string
+          type?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          title?: string
+          type?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_history: {
+        Row: {
+          created_at: string | null
+          delivery_date: string
+          id: string
+          request_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          delivery_date: string
+          id?: string
+          request_id: string
+          status: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          delivery_date?: string
+          id?: string
+          request_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_history_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "laundry_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pickup_slots: {
+        Row: {
+          assigned_staff: string | null
+          created_at: string | null
+          hostel_block: string
+          id: string
+          is_available: boolean | null
+          pickup_date: string
+          time_slot: string
+        }
+        Insert: {
+          assigned_staff?: string | null
+          created_at?: string | null
+          hostel_block: string
+          id?: string
+          is_available?: boolean | null
+          pickup_date: string
+          time_slot: string
+        }
+        Update: {
+          assigned_staff?: string | null
+          created_at?: string | null
+          hostel_block?: string
+          id?: string
+          is_available?: boolean | null
+          pickup_date?: string
+          time_slot?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string
+          hostel_block: string | null
+          id: string
+          name: string
+          role: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          hostel_block?: string | null
+          id: string
+          name: string
+          role: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          hostel_block?: string | null
+          id?: string
+          name?: string
+          role?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      student_usage: {
+        Row: {
+          created_at: string | null
+          extra_charges: number | null
+          id: string
+          is_flagged: boolean | null
+          request_count: number | null
+          updated_at: string | null
+          user_id: string
+          week_number: number
+          year: number
+        }
+        Insert: {
+          created_at?: string | null
+          extra_charges?: number | null
+          id?: string
+          is_flagged?: boolean | null
+          request_count?: number | null
+          updated_at?: string | null
+          user_id: string
+          week_number: number
+          year: number
+        }
+        Update: {
+          created_at?: string | null
+          extra_charges?: number | null
+          id?: string
+          is_flagged?: boolean | null
+          request_count?: number | null
+          updated_at?: string | null
+          user_id?: string
+          week_number?: number
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_usage_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_otp: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_qr_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

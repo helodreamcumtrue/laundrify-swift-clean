@@ -25,6 +25,7 @@ import StudentProfile from "./pages/student/StudentProfile";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import SchedulePickups from "./pages/admin/SchedulePickups";
 import Delivery from "./pages/admin/Delivery";
+import QRPickupScanner from "./pages/admin/QRPickupScanner";
 import StudentRecords from "./pages/admin/StudentRecords";
 import AdminFeedback from "./pages/admin/AdminFeedback";
 import AdminProfile from "./pages/admin/AdminProfile";
@@ -60,6 +61,7 @@ const App = () => (
               <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminDashboard /></ProtectedRoute>} />
               <Route path="/admin/schedule" element={<ProtectedRoute allowedRoles={["Admin"]}><SchedulePickups /></ProtectedRoute>} />
               <Route path="/admin/delivery" element={<ProtectedRoute allowedRoles={["Admin"]}><Delivery /></ProtectedRoute>} />
+              <Route path="/admin/qr-scanner" element={<ProtectedRoute allowedRoles={["Admin"]}><QRPickupScanner /></ProtectedRoute>} />
               <Route path="/admin/records" element={<ProtectedRoute allowedRoles={["Admin"]}><StudentRecords /></ProtectedRoute>} />
               <Route path="/admin/feedback" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminFeedback /></ProtectedRoute>} />
               <Route path="/admin/profile" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminProfile /></ProtectedRoute>} />
