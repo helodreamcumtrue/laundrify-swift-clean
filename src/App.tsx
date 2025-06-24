@@ -45,11 +45,11 @@ const App = () => (
               {/* Auth Routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
-              <Route path="/" element={<Auth />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/feedback" element={<Feedback />} />
+              
+              {/* Default redirect to login for unauthenticated users */}
+              <Route path="/" element={<Login />} />
+              
               {/* Student Routes */}
-              <Route path="/" element={<ProtectedRoute allowedRoles={["Student"]}><StudentHome /></ProtectedRoute>} />
               <Route path="/student/home" element={<ProtectedRoute allowedRoles={["Student"]}><StudentHome /></ProtectedRoute>} />
               <Route path="/student/request" element={<ProtectedRoute allowedRoles={["Student"]}><RequestLaundry /></ProtectedRoute>} />
               <Route path="/student/track" element={<ProtectedRoute allowedRoles={["Student"]}><TrackStatus /></ProtectedRoute>} />
