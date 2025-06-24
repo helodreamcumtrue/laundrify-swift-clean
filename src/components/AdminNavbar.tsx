@@ -8,7 +8,7 @@ import { useTheme } from '../contexts/ThemeContext';
 const AdminNavbar = () => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const { user, logout } = useAuth();
+  const { user, signOut } = useAuth();
   const { isDarkMode, toggleDarkMode } = useTheme();
   const location = useLocation();
 
@@ -96,7 +96,7 @@ const AdminNavbar = () => {
                       </button>
                       <button
                         onClick={() => {
-                          logout();
+                          signOut();
                           setShowProfileMenu(false);
                         }}
                         className="flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
