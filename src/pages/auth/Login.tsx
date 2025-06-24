@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -10,30 +10,52 @@ const Login = () => {
     password: ''
   });
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!authLoading && user) {
+      console.log('Login: User already logged in, redirecting to:', user.role === 'Admin' ? '/admin/dashboard' : '/student/home');
+      if (user.role === 'Admin') {
+        navigate('/admin/dashboard', { replace: true });
+      } else {
+        navigate('/student/home', { replace: true });
+      }
+    }
+  }, [user, authLoading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      console.log('Login: Attempting to sign in user:', formData.email);
+      
       const loggedInUser = await signIn(formData.email, formData.password);
 
-      toast({
-        title: "Success",
-        description: "Logged in successfully!",
-      });
+      if (loggedInUser) {
+        console.log('Login: Sign in successful for user:', loggedInUser.id, 'role:', loggedInUser.role);
+        
+        toast({
+          title: "Success",
+          description: "Logged in successfully!",
+        });
 
-      // Redirect based on user role
-      if (loggedInUser?.role === 'Admin') {
-        navigate('/admin/dashboard');
-      } else {
-        navigate('/student/home');
+        // Redirect based on user role
+        if (loggedInUser.role === 'Admin') {
+          console.log('Login: Redirecting admin to dashboard');
+          navigate('/admin/dashboard', { replace: true });
+        } else {
+          console.log('Login: Redirecting student to home');
+          navigate('/student/home', { replace: true });
+        }
       }
 
     } catch (error: any) {
+      console.error('Login: Sign in failed:', error);
+      
       toast({
         title: "Error",
         description: error.message || "Failed to log in",
@@ -50,6 +72,20 @@ const Login = () => {
       [e.target.name]: e.target.value
     });
   };
+
+  // Show loading spinner while checking auth state
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  // Don't render login form if user is already logged in
+  if (user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4">

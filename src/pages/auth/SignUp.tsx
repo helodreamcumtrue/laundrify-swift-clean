@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -13,9 +13,21 @@ const SignUp = () => {
     hostelBlock: ''
   });
   const [loading, setLoading] = useState(false);
-  const { signUp } = useAuth();
+  const { signUp, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!authLoading && user) {
+      console.log('SignUp: User already logged in, redirecting to:', user.role === 'Admin' ? '/admin/dashboard' : '/student/home');
+      if (user.role === 'Admin') {
+        navigate('/admin/dashboard', { replace: true });
+      } else {
+        navigate('/student/home', { replace: true });
+      }
+    }
+  }, [user, authLoading, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
@@ -29,6 +41,8 @@ const SignUp = () => {
     setLoading(true);
 
     try {
+      console.log('SignUp: Attempting to sign up user:', formData.email);
+      
       await signUp(
         formData.email,
         formData.password,
@@ -37,6 +51,8 @@ const SignUp = () => {
         formData.hostelBlock || undefined
       );
       
+      console.log('SignUp: Sign up successful');
+      
       toast({
         title: "Success",
         description: "Account created successfully! Please check your email to verify your account.",
@@ -44,6 +60,8 @@ const SignUp = () => {
       
       navigate('/login');
     } catch (error: any) {
+      console.error('SignUp: Sign up failed:', error);
+      
       toast({
         title: "Error",
         description: error.message || "Failed to create account",
@@ -53,6 +71,20 @@ const SignUp = () => {
       setLoading(false);
     }
   };
+
+  // Show loading spinner while checking auth state
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  // Don't render signup form if user is already logged in
+  if (user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4">
