@@ -2,12 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-const signIn = async (email, password) => {
-  const res = await api.login(email, password);
-  const user = res.data.user; // contains .role
-  setUser(user);
-  return user;
-};
+
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
