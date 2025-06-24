@@ -1,58 +1,26 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
 import StudentNavbar from '../../components/StudentNavbar';
 
 const RequestLaundry = () => {
   const [formData, setFormData] = useState({
     clothesType: 'Normal',
-    pickupSlotId: '',
+    pickupTime: '',
     notes: ''
   });
-  const [pickupSlots, setPickupSlots] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [loadingSlots, setLoadingSlots] = useState(true);
-  const { user } = useAuth();
+  const [message, setMessage] = useState('');
   const navigate = useNavigate();
-  const { toast } = useToast();
 
-  useEffect(() => {
-    fetchPickupSlots();
-  }, [user]);
-
-  const fetchPickupSlots = async () => {
-    if (!user) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('pickup_slots')
-        .select('*')
-        .eq('is_available', true)
-        .gte('pickup_date', new Date().toISOString().split('T')[0])
-        .order('pickup_date', { ascending: true });
-
-      if (error) throw error;
-
-      // Filter by user's hostel block if they have one
-      const filteredSlots = user.hostel_block 
-        ? data.filter(slot => slot.hostel_block === user.hostel_block)
-        : data;
-
-      setPickupSlots(filteredSlots);
-    } catch (error: any) {
-      console.error('Error fetching pickup slots:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load pickup slots",
-        variant: "destructive",
-      });
-    } finally {
-      setLoadingSlots(false);
-    }
-  };
+  // Mock pickup slots
+  const pickupSlots = [
+    '10:00 AM - 11:00 AM, Block A',
+    '11:00 AM - 12:00 PM, Block A',
+    '2:00 PM - 3:00 PM, Block A',
+    '3:00 PM - 4:00 PM, Block A',
+    '4:00 PM - 5:00 PM, Block A'
+  ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -63,55 +31,28 @@ const RequestLaundry = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
-
     setLoading(true);
+    setMessage('');
 
     try {
-      const { error } = await supabase
-        .from('laundry_requests')
-        .insert({
-          user_id: user.id,
-          clothes_type: formData.clothesType,
-          pickup_slot_id: formData.pickupSlotId || null,
-          notes: formData.notes || null,
-        });
-
-      if (error) throw error;
-
-      // Create notification
-      await supabase
-        .from('notifications')
-        .insert({
-          user_id: user.id,
-          title: 'Request Submitted',
-          message: `Your ${formData.clothesType.toLowerCase()} laundry request has been submitted successfully.`,
-          type: 'success'
-        });
-
-      toast({
-        title: "Success",
-        description: "Laundry request submitted successfully!",
-      });
-
+      // Mock API call - replace with Supabase integration
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      setMessage('Request submitted successfully!');
+      
       // Reset form
       setFormData({
         clothesType: 'Normal',
-        pickupSlotId: '',
+        pickupTime: '',
         notes: ''
       });
 
-      // Redirect to track status
+      // Redirect after success
       setTimeout(() => {
         navigate('/student/track');
       }, 2000);
-    } catch (error: any) {
-      console.error('Error submitting request:', error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to submit request",
-        variant: "destructive",
-      });
+    } catch (error) {
+      setMessage('Error submitting request. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -124,6 +65,16 @@ const RequestLaundry = () => {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Request Laundry Service</h1>
+          
+          {message && (
+            <div className={`mb-6 p-4 rounded-md ${
+              message.includes('successfully') 
+                ? 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800'
+                : 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800'
+            }`}>
+              {message}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
@@ -138,41 +89,30 @@ const RequestLaundry = () => {
                 required
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
-                <option value="Normal">Normal (24-48 hours)</option>
-                <option value="Urgent">Urgent (12-24 hours)</option>
+                <option value="Normal">Normal</option>
+                <option value="Urgent">Urgent</option>
               </select>
             </div>
 
             <div>
-              <label htmlFor="pickupSlotId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="pickupTime" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Pickup Time
               </label>
-              {loadingSlots ? (
-                <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700">
-                  <div className="animate-pulse text-gray-500 dark:text-gray-400">Loading pickup slots...</div>
-                </div>
-              ) : (
-                <select
-                  id="pickupSlotId"
-                  name="pickupSlotId"
-                  value={formData.pickupSlotId}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                >
-                  <option value="">Select a pickup time</option>
-                  {pickupSlots.map((slot) => (
-                    <option key={slot.id} value={slot.id}>
-                      {slot.time_slot} - {slot.hostel_block} ({new Date(slot.pickup_date).toLocaleDateString()})
-                    </option>
-                  ))}
-                </select>
-              )}
-              {!loadingSlots && pickupSlots.length === 0 && (
-                <p className="text-sm text-yellow-600 dark:text-yellow-400 mt-1">
-                  No pickup slots available for your hostel block at the moment.
-                </p>
-              )}
+              <select
+                id="pickupTime"
+                name="pickupTime"
+                value={formData.pickupTime}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              >
+                <option value="">Select a pickup time</option>
+                {pickupSlots.map((slot, index) => (
+                  <option key={index} value={slot}>
+                    {slot}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
@@ -192,7 +132,7 @@ const RequestLaundry = () => {
 
             <button
               type="submit"
-              disabled={loading || pickupSlots.length === 0}
+              disabled={loading}
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? (
@@ -209,11 +149,10 @@ const RequestLaundry = () => {
           <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-200 dark:border-blue-800">
             <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">Important Notes:</h3>
             <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-              <li>• Normal laundry takes 24-48 hours to complete</li>
+              <li>• Normal laundry takes 24-48 hours</li>
               <li>• Urgent requests are processed within 12-24 hours</li>
               <li>• Make sure to be available during pickup time</li>
               <li>• You'll receive notifications about status updates</li>
-              <li>• A QR code will be generated for your request for easy tracking</li>
             </ul>
           </div>
         </div>

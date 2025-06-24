@@ -10,7 +10,7 @@ const AdminProfile = () => {
   const [editData, setEditData] = useState({
     name: user?.name || '',
     email: user?.email || '',
-    hostelBlock: user?.hostel_block || ''
+    hostelBlock: user?.hostelBlock || ''
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -20,7 +20,7 @@ const AdminProfile = () => {
     setEditData({
       name: user?.name || '',
       email: user?.email || '',
-      hostelBlock: user?.hostel_block || ''
+      hostelBlock: user?.hostelBlock || ''
     });
   };
 
@@ -165,7 +165,7 @@ const AdminProfile = () => {
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       />
                     ) : (
-                      <p className="text-gray-900 dark:text-white">{user?.hostel_block}</p>
+                      <p className="text-gray-900 dark:text-white">{user?.hostelBlock}</p>
                     )}
                   </div>
                 </div>

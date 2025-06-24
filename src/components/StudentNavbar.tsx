@@ -8,7 +8,7 @@ import { useTheme } from '../contexts/ThemeContext';
 const StudentNavbar = () => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [notificationCount] = useState(3); // Mock notification count
-  const { user, signOut } = useAuth();
+  const { user, logout } = useAuth();
   const { isDarkMode, toggleDarkMode } = useTheme();
   const location = useLocation();
 
@@ -118,7 +118,7 @@ const StudentNavbar = () => {
                       </button>
                       <button
                         onClick={() => {
-                          signOut();
+                          logout();
                           setShowProfileMenu(false);
                         }}
                         className="flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
