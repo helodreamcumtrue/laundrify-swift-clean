@@ -10,59 +10,29 @@ const Login = () => {
     password: ''
   });
   const [loading, setLoading] = useState(false);
-  const { signIn, user } = useAuth();
+  const { signIn } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  // Redirect if already logged in
-  const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setLoading(true);
-
-  try {
-    const loggedInUser = await signIn(formData.email, formData.password);
-
-    toast({
-      title: "Success",
-      description: "Logged in successfully!",
-    });
-
-    // Redirect here instead of waiting for useEffect
-    if (loggedInUser?.role === 'Admin') {
-      navigate('/admin/dashboard');
-    } else {
-      navigate('/student/home');
-    }
-
-  } catch (error: any) {
-    toast({
-      title: "Error",
-      description: error.message || "Failed to log in",
-      variant: "destructive",
-    });
-  } finally {
-    setLoading(false);
-  }
-};
-
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      await signIn(formData.email, formData.password);
+      const loggedInUser = await signIn(formData.email, formData.password);
+
       toast({
         title: "Success",
         description: "Logged in successfully!",
       });
+
+      // Redirect based on user role
+      if (loggedInUser?.role === 'Admin') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/student/home');
+      }
+
     } catch (error: any) {
       toast({
         title: "Error",
@@ -72,6 +42,13 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
   return (
